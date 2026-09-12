@@ -1,0 +1,51 @@
+[
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "This project was developed for Milestone 4 in Data Science. The objective is to explore multidimensional automotive specifications using data visualization techniques and communicate statistical insights effectively through an interactive Quarto website."
+  },
+  {
+    "objectID": "about.html#about-this-project",
+    "href": "about.html#about-this-project",
+    "title": "About",
+    "section": "",
+    "text": "This project was developed for Milestone 4 in Data Science. The objective is to explore multidimensional automotive specifications using data visualization techniques and communicate statistical insights effectively through an interactive Quarto website."
+  },
+  {
+    "objectID": "about.html#about-the-dataset",
+    "href": "about.html#about-the-dataset",
+    "title": "About",
+    "section": "About the Dataset",
+    "text": "About the Dataset\nThe dataset used in this analysis is the Car Dataset (1945–2020). It contains technical specifications for over 70,000 distinct passenger vehicle trim configurations worldwide.\nKey variables explored include:\n\ncurb_weight_kg: The unladen weight of the vehicle in kilograms (without passengers or cargo).\nengine_hp: Engine power output rated in mechanical horsepower.\ndrive_wheels: The vehicle’s drivetrain layout (Front-Wheel Drive, Rear-Wheel Drive, All-Wheel Drive, and Four-Wheel Drive).\nYear_from: The initial model year of manufacture.\nmixed_fuel_consumption_per_100_km_l: Combined cycle fuel consumption in liters per 100 kilometers."
+  },
+  {
+    "objectID": "about.html#about-the-author",
+    "href": "about.html#about-the-author",
+    "title": "About",
+    "section": "About the Author",
+    "text": "About the Author\nThis website was built by Nikita Liohki.\nThe code and data analysis workflow are hosted on GitHub: milestone-4 Repository."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Vehicle Weight, Power, and Historical Evolution",
+    "section": "",
+    "text": "Across the global automotive landscape, vehicle mass and engine power are intimately connected. Heavier vehicle platforms demand larger engine outputs to ensure responsive acceleration and drivability. At the same time, high-performance engines require sturdier chassis, robust brakes, and heavier cooling systems.\nUse the interactive controls below to explore this relationship across 60 years of automotive history (1960–2020).\n\n  Drivetrain Filter:\n  \n    \n    All\n  \n  |\n  \n    \n    \n    FWD\n  \n  \n    \n    \n    RWD\n  \n  \n    \n    \n    AWD\n  \n  \n    \n    \n    4WD\n  \n  \n    \n    \n    Other / Full-Time\n  \n\n\n\n\n\n\n\n\nDataset Scale: This interactive visualization is built on 53,102 authentic vehicle observations across model years 1960 through 2020. Drag the slider to inspect any year or toggle drivetrains to filter.\n\n\n\n\n\nA Resilient Positive Correlation: Across virtually every decade, vehicle curb weight exhibits a strong upward relationship with engine horsepower. Lighter vehicles rarely exceed 200 hp, whereas vehicles weighing over 2,000 kg consistently require 250 hp to 600+ hp to deliver performance.\nDrivetrain Architecture Roles:\n\nFront-Wheel Drive (FWD): Dominates the commuter and economy segment (900 kg – 1,600 kg, 75 hp – 180 hp) starting in the late 1970s and 1980s, offering high packaging efficiency and low mass.\nRear-Wheel Drive (RWD): Predominates in the earlier 1960s–1970s eras and remains the choice for sports cars, muscle cars, and executive sedans requiring high horsepower (250 hp – 650+ hp).\nAll-Wheel Drive (AWD): Expands rapidly from the 1990s onward, anchoring the upper-middle weight category (1,600 kg – 2,400 kg) for premium sedans and performance crossovers.\nFour-Wheel Drive (4WD): Clusters in heavy-duty utility vehicles and off-road trucks (1,800 kg – 2,800 kg)."
+  },
+  {
+    "objectID": "index.html#main-exploration-vehicle-weight-vs.-engine-horsepower",
+    "href": "index.html#main-exploration-vehicle-weight-vs.-engine-horsepower",
+    "title": "Vehicle Weight, Power, and Historical Evolution",
+    "section": "",
+    "text": "Across the global automotive landscape, vehicle mass and engine power are intimately connected. Heavier vehicle platforms demand larger engine outputs to ensure responsive acceleration and drivability. At the same time, high-performance engines require sturdier chassis, robust brakes, and heavier cooling systems.\nUse the interactive controls below to explore this relationship across 60 years of automotive history (1960–2020).\n\n  Drivetrain Filter:\n  \n    \n    All\n  \n  |\n  \n    \n    \n    FWD\n  \n  \n    \n    \n    RWD\n  \n  \n    \n    \n    AWD\n  \n  \n    \n    \n    4WD\n  \n  \n    \n    \n    Other / Full-Time\n  \n\n\n\n\n\n\n\n\nDataset Scale: This interactive visualization is built on 53,102 authentic vehicle observations across model years 1960 through 2020. Drag the slider to inspect any year or toggle drivetrains to filter.\n\n\n\n\n\nA Resilient Positive Correlation: Across virtually every decade, vehicle curb weight exhibits a strong upward relationship with engine horsepower. Lighter vehicles rarely exceed 200 hp, whereas vehicles weighing over 2,000 kg consistently require 250 hp to 600+ hp to deliver performance.\nDrivetrain Architecture Roles:\n\nFront-Wheel Drive (FWD): Dominates the commuter and economy segment (900 kg – 1,600 kg, 75 hp – 180 hp) starting in the late 1970s and 1980s, offering high packaging efficiency and low mass.\nRear-Wheel Drive (RWD): Predominates in the earlier 1960s–1970s eras and remains the choice for sports cars, muscle cars, and executive sedans requiring high horsepower (250 hp – 650+ hp).\nAll-Wheel Drive (AWD): Expands rapidly from the 1990s onward, anchoring the upper-middle weight category (1,600 kg – 2,400 kg) for premium sedans and performance crossovers.\nFour-Wheel Drive (4WD): Clusters in heavy-duty utility vehicles and off-road trucks (1,800 kg – 2,800 kg)."
+  },
+  {
+    "objectID": "index.html#historical-trends-power-and-efficiency-over-time",
+    "href": "index.html#historical-trends-power-and-efficiency-over-time",
+    "title": "Vehicle Weight, Power, and Historical Evolution",
+    "section": "Historical Trends: Power and Efficiency Over Time",
+    "text": "Historical Trends: Power and Efficiency Over Time\nTo place this relationship in historical context, how have horsepower and fuel consumption changed over the past six decades?\nThe time-series below tracks the yearly average engine horsepower across all recorded production models from 1960 to 2020.\n\n\n\n\n\n\n\nSupporting Trend: Fuel Consumption Over Time\nTechnological advances such as direct fuel injection, turbocharging, and multi-gear transmissions enabled vehicles to increase their average horsepower while simultaneously decreasing fuel consumption.\n\n\n\n\n\n\nAcross the 1980s through 2010s, average mixed fuel consumption fell from around 9.5 L/100 km to below 7.0 L/100 km, demonstrating that modern vehicles achieved greater horsepower without sacrificing energy efficiency."
+  }
+]
