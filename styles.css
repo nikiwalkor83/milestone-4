@@ -1,0 +1,185 @@
+/* Early-2000s Tuner Game Aesthetic - Steam Profile Style Wallpaper & Central Content */
+
+html {
+  background-color: #080b10;
+}
+
+body {
+  background-color: #080b10;
+  background-image: 
+    linear-gradient(180deg, rgba(8, 11, 16, 0.72) 0%, rgba(8, 11, 16, 0.45) 25%, rgba(8, 11, 16, 0.45) 75%, rgba(8, 11, 16, 0.85) 100%),
+    radial-gradient(ellipse at 50% 30%, rgba(8, 11, 16, 0.5) 0%, rgba(8, 11, 16, 0.85) 85%),
+    url("images/tuner_wallpaper.png");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+  background: rgba(9, 13, 18, 0.92) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.navbar .nav-link,
+.navbar-brand,
+.navbar .nav-link.active {
+  color: #f1f5f9 !important;
+  font-weight: 500;
+}
+
+.navbar .nav-link.active {
+  border-bottom: 2px solid #38bdf8;
+  padding-bottom: 0.35rem;
+}
+
+/* Central Content Container - Steam Profile Style */
+#quarto-content {
+  background: transparent !important;
+}
+
+main.content {
+  background: rgba(13, 17, 24, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding: 2.2rem 2.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 1px rgba(255, 255, 255, 0.08);
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Sidebar / Table of Contents */
+#quarto-margin-sidebar {
+  background: rgba(13, 17, 24, 0.84);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.2rem;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  margin-top: 1.5rem;
+}
+
+#quarto-margin-sidebar h2 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-top: 0;
+}
+
+#quarto-margin-sidebar a {
+  color: #cbd5e1;
+  font-size: 0.88rem;
+}
+
+#quarto-margin-sidebar a:hover,
+#quarto-margin-sidebar a.active {
+  color: #38bdf8;
+}
+
+/* Headings */
+h1, h2, h3, h4, .title, .subtitle, .author {
+  color: #f8fafc !important;
+  font-weight: 600;
+}
+
+h1.title {
+  font-size: 2.1rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.subtitle {
+  color: #94a3b8 !important;
+  font-size: 1.15rem;
+  margin-bottom: 1.2rem;
+}
+
+h2 {
+  margin-top: 2rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: 1.15rem;
+  margin-top: 1.4rem;
+  color: #e2e8f0 !important;
+}
+
+p, li, td, th {
+  color: #cbd5e1;
+  line-height: 1.65;
+}
+
+strong, b {
+  color: #f8fafc;
+}
+
+a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+}
+
+blockquote {
+  border-left: 3px solid #38bdf8;
+  background: rgba(15, 23, 42, 0.65);
+  color: #cbd5e1;
+  padding: 0.85rem 1.1rem;
+  border-radius: 6px;
+  margin: 1.2rem 0;
+}
+
+/* Drivetrain Control Bar */
+.drivetrain-controls-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+/* Plotly container adjustments */
+.plotly.html-widget,
+.js-plotly-plot,
+.js-plotly-plot .plotly {
+  max-width: 100% !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.cell-output-display {
+  overflow: visible !important;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 992px) {
+  main.content {
+    padding: 1.4rem 1.2rem;
+    margin-top: 0.8rem;
+    margin-bottom: 1.5rem;
+    background: rgba(13, 17, 24, 0.94);
+  }
+}

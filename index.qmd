@@ -1,0 +1,459 @@
+---
+title: "Vehicle Weight, Power, and Historical Evolution"
+subtitle: "An empirical exploration of 53,000+ vehicles from 1945 to 2020"
+author: "Nikita Liohki"
+date: last-modified
+format:
+  html:
+    toc: true
+    code-fold: true
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+library(readr)
+library(dplyr)
+library(plotly)
+library(htmlwidgets)
+
+# Load vehicle dataset
+cars_raw <- read_csv("Car Dataset 1945-2020.csv", show_col_types = FALSE)
+
+# Clean and prepare variables for main analysis (1960–2020)
+cars_clean <- cars_raw |>
+  filter(
+    !is.na(curb_weight_kg),
+    !is.na(engine_hp),
+    !is.na(drive_wheels),
+    !is.na(Year_from)
+  ) |>
+  filter(
+    curb_weight_kg >= 400,
+    curb_weight_kg <= 4000,
+    engine_hp >= 20,
+    engine_hp <= 1500,
+    Year_from >= 1960,
+    Year_from <= 2020
+  ) |>
+  mutate(
+    dw_clean = trimws(tolower(drive_wheels)),
+    Drivetrain = factor(case_when(
+      dw_clean == "front wheel drive" ~ "FWD",
+      dw_clean == "rear wheel drive" ~ "RWD",
+      dw_clean == "all wheel drive (awd)" ~ "AWD",
+      dw_clean == "four wheel drive (4wd)" ~ "4WD",
+      TRUE ~ "Other"
+    ), levels = c("FWD", "RWD", "AWD", "4WD", "Other"))
+  ) |>
+  filter(!is.na(Drivetrain))
+
+n_obs <- nrow(cars_clean)
+
+# Compute yearly statistics for the live slider header
+yearly_summary <- cars_clean |>
+  group_by(Year_from) |>
+  summarise(
+    count = n(),
+    mean_hp = round(mean(engine_hp, na.rm = TRUE)),
+    mean_wt = round(mean(curb_weight_kg, na.rm = TRUE)),
+    .groups = "drop"
+  )
+
+cars_with_stats <- cars_clean |>
+  left_join(yearly_summary, by = "Year_from") |>
+  mutate(
+    Frame_Label = factor(
+      paste0(Year_from, "  |  ", format(count, big.mark = ","), " vehicles  |  Avg: ", mean_hp, " hp, ", format(mean_wt, big.mark = ","), " kg"),
+      levels = unique(paste0(Year_from, "  |  ", format(count, big.mark = ","), " vehicles  |  Avg: ", mean_hp, " hp, ", format(mean_wt, big.mark = ","), " kg")[order(Year_from)])
+    )
+  )
+```
+
+## Main Exploration: Vehicle Weight vs. Engine Horsepower
+
+### Are heavier cars generally more powerful?
+
+Across the global automotive landscape, vehicle mass and engine power are intimately connected. Heavier vehicle platforms demand larger engine outputs to ensure responsive acceleration and drivability. At the same time, high-performance engines require sturdier chassis, robust brakes, and heavier cooling systems.
+
+Use the interactive controls below to explore this relationship across **60 years of automotive history (1960–2020)**.
+
+```{=html}
+<div id="drivetrain-controls" class="drivetrain-controls-bar">
+  <span style="font-weight: 600; font-size: 14px; color: #f8fafc;">Drivetrain Filter:</span>
+  <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 14px; color: #f8fafc;">
+    <input type="checkbox" id="dt-all" checked style="accent-color: #38bdf8; width: 17px; height: 17px; cursor: pointer;">
+    All
+  </label>
+  <span style="color: rgba(148, 163, 184, 0.4); user-select: none;">|</span>
+  <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #bae6fd;">
+    <input type="checkbox" class="dt-checkbox" value="FWD" checked style="accent-color: #38bdf8; width: 17px; height: 17px; cursor: pointer;">
+    <span style="display:inline-block; width:10px; height:10px; background:#38bdf8; border-radius:50%; box-shadow: 0 0 6px rgba(56, 189, 248, 0.6);"></span>
+    FWD
+  </label>
+  <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #fecdd3;">
+    <input type="checkbox" class="dt-checkbox" value="RWD" checked style="accent-color: #f43f5e; width: 17px; height: 17px; cursor: pointer;">
+    <span style="display:inline-block; width:10px; height:10px; background:#f43f5e; border-radius:50%; box-shadow: 0 0 6px rgba(244, 63, 94, 0.6);"></span>
+    RWD
+  </label>
+  <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #bbf7d0;">
+    <input type="checkbox" class="dt-checkbox" value="AWD" checked style="accent-color: #4ade80; width: 17px; height: 17px; cursor: pointer;">
+    <span style="display:inline-block; width:10px; height:10px; background:#4ade80; border-radius:50%; box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);"></span>
+    AWD
+  </label>
+  <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #e9d5ff;">
+    <input type="checkbox" class="dt-checkbox" value="4WD" checked style="accent-color: #c084fc; width: 17px; height: 17px; cursor: pointer;">
+    <span style="display:inline-block; width:10px; height:10px; background:#c084fc; border-radius:50%; box-shadow: 0 0 6px rgba(192, 132, 252, 0.6);"></span>
+    4WD
+  </label>
+  <label style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500; color: #fde68a;">
+    <input type="checkbox" class="dt-checkbox" value="Other" checked style="accent-color: #fbbf24; width: 17px; height: 17px; cursor: pointer;">
+    <span style="display:inline-block; width:10px; height:10px; background:#fbbf24; border-radius:50%; box-shadow: 0 0 6px rgba(251, 191, 36, 0.6);"></span>
+    Other / Full-Time
+  </label>
+</div>
+```
+
+```{r}
+#| label: main-horsepower-weight-interactive
+#| fig-height: 6.5
+#| out-width: "100%"
+
+canonical_order <- c("FWD", "RWD", "AWD", "4WD", "Other")
+color_map <- c(
+  "FWD" = "#38bdf8",
+  "RWD" = "#f43f5e",
+  "AWD" = "#4ade80",
+  "4WD" = "#c084fc",
+  "Other" = "#fbbf24"
+)
+
+
+# Base Plotly visualization with yearly slider frames
+p <- plot_ly(
+  data = cars_with_stats,
+  x = ~curb_weight_kg,
+  y = ~engine_hp,
+  color = ~Drivetrain,
+  colors = color_map,
+  frame = ~Frame_Label,
+  type = "scatter",
+  mode = "markers",
+  marker = list(
+    size = 8,
+    opacity = 0.65,
+    line = list(width = 0.6, color = "rgba(255,255,255,0.85)")
+  ),
+  text = ~paste0(
+    "<b>", Make, " ", Modle, " (", Year_from, ")</b><br>",
+    "Drivetrain: ", Drivetrain, "<br>",
+    "Curb Weight: ", format(curb_weight_kg, big.mark = ","), " kg<br>",
+    "Engine Power: ", engine_hp, " hp"
+  ),
+  hoverinfo = "text",
+  height = 560
+) |>
+  animation_button(visible = FALSE) |>
+  layout(
+    paper_bgcolor = "rgba(13, 17, 24, 0.6)",
+    plot_bgcolor = "rgba(10, 15, 22, 0.7)",
+    xaxis = list(
+      title = list(text = "<b>Vehicle Curb Weight (kg)</b>", standoff = 18, font = list(size = 14, color = "#e2e8f0")),
+      range = c(450, 3100),
+      tickmode = "array",
+      tickvals = c(500, 1000, 1500, 2000, 2500, 3000),
+      ticktext = c("500 kg", "1,000 kg", "1,500 kg", "2,000 kg", "2,500 kg", "3,000 kg"),
+      tickfont = list(size = 12, color = "#dfeaf8"),
+      showline = TRUE,
+      linewidth = 1.5,
+      linecolor = "rgba(148, 163, 184, 0.75)",
+      showgrid = TRUE,
+      gridcolor = "rgba(148, 163, 184, 0.16)"
+    ),
+    yaxis = list(
+      title = list(text = "<b>Engine Horsepower (hp)</b>", standoff = 18, font = list(size = 14, color = "#e2e8f0")),
+      range = c(10, 850),
+      tickmode = "array",
+      tickvals = c(0, 100, 200, 300, 400, 500, 600, 700, 800),
+      ticktext = c("0 hp", "100 hp", "200 hp", "300 hp", "400 hp", "500 hp", "600 hp", "700 hp", "800 hp"),
+      tickfont = list(size = 12, color = "#dfeaf8"),
+      showline = TRUE,
+      linewidth = 1.5,
+      linecolor = "rgba(148, 163, 184, 0.75)",
+      showgrid = TRUE,
+      gridcolor = "rgba(148, 163, 184, 0.16)"
+    ),
+    legend = list(
+      title = list(text = "<b>Drivetrain Layout</b>", font = list(size = 12, color = "#e2e8f0")),
+      orientation = "h",
+      x = 0.5,
+      xanchor = "center",
+      y = 1.05,
+      font = list(size = 12, color = "#e2e8f0")
+    ),
+    margin = list(l = 85, r = 35, t = 50, b = 115),
+    font = list(color = "#e2e8f0"),
+    template = "plotly_dark"
+  ) |>
+  config(responsive = TRUE, displaylogo = FALSE)
+
+built <- plotly_build(p)
+
+# Enforce canonical trace ordering in base data
+base_map <- list()
+for (tr in built$x$data) {
+  if (!is.null(tr$name)) base_map[[tr$name]] <- tr
+}
+new_base_data <- list()
+for (nm in canonical_order) {
+  if (!is.null(base_map[[nm]])) {
+    new_base_data[[length(new_base_data) + 1]] <- base_map[[nm]]
+  } else {
+    new_base_data[[length(new_base_data) + 1]] <- list(
+      name = nm,
+      type = "scatter",
+      mode = "markers",
+      x = list(),
+      y = list(),
+      text = list(),
+      marker = list(color = color_map[[nm]])
+    )
+  }
+}
+built$x$data <- new_base_data
+
+# Enforce canonical trace ordering across all 61 frames
+for (k in seq_along(built$x$frames)) {
+  fr_data <- built$x$frames[[k]]$data
+  trace_map <- list()
+  for (tr in fr_data) {
+    if (!is.null(tr$name)) trace_map[[tr$name]] <- tr
+  }
+  new_fr_data <- list()
+  for (nm in canonical_order) {
+    if (!is.null(trace_map[[nm]])) {
+      new_fr_data[[length(new_fr_data) + 1]] <- trace_map[[nm]]
+    } else {
+      new_fr_data[[length(new_fr_data) + 1]] <- list(
+        name = nm,
+        type = "scatter",
+        mode = "markers",
+        x = list(),
+        y = list(),
+        text = list(),
+        marker = list(color = color_map[[nm]])
+      )
+    }
+  }
+  built$x$frames[[k]]$data <- new_fr_data
+}
+
+# Customize the slider track and step labels to eliminate overlap
+if (length(built$x$layout$sliders) > 0) {
+  steps <- built$x$layout$sliders[[1]]$steps
+  years <- 1960:2020
+  for (i in seq_along(steps)) {
+    yr <- years[i]
+    if (yr %% 10 == 0 || yr == 2020) {
+      built$x$layout$sliders[[1]]$steps[[i]]$label <- as.character(yr)
+    } else {
+      built$x$layout$sliders[[1]]$steps[[i]]$label <- ""
+    }
+  }
+  built$x$layout$sliders[[1]]$currentvalue <- list(
+    prefix = "Selected Model Year & Live Stats: ",
+    font = list(size = 15, color = "#f8fafc", family = "system-ui, -apple-system, sans-serif"),
+    offset = 14
+  )
+  built$x$layout$sliders[[1]]$font <- list(color = "#94a3b8")
+  built$x$layout$sliders[[1]]$pad <- list(t = 38, b = 10, l = 10, r = 10)
+  built$x$layout$sliders[[1]]$len <- 1.0
+  built$x$layout$sliders[[1]]$x <- 0.0
+}
+
+# Connect multi-select checkboxes to Plotly traces with exact category matching
+js_code <- "
+function(el, x) {
+  function applyDrivetrainFilter() {
+    var dtBoxes = document.querySelectorAll('.dt-checkbox');
+    if (dtBoxes.length === 0 || !el.data) return;
+
+    var boxMap = {};
+    dtBoxes.forEach(function(b) {
+      boxMap[b.value] = b.checked;
+    });
+
+    var vis = [];
+    for (var i = 0; i < el.data.length; i++) {
+      var traceName = el.data[i].name;
+      vis.push(boxMap[traceName] === true ? true : 'legendonly');
+    }
+
+    Plotly.restyle(el, {visible: vis});
+
+    if (el._transitionData && el._transitionData._frames) {
+      var frames = el._transitionData._frames;
+      for (var f = 0; f < frames.length; f++) {
+        if (frames[f].data) {
+          for (var t = 0; t < frames[f].data.length; t++) {
+            var fTraceName = frames[f].data[t].name;
+            if (boxMap.hasOwnProperty(fTraceName)) {
+              frames[f].data[t].visible = (boxMap[fTraceName] === true ? true : 'legendonly');
+            }
+          }
+        }
+      }
+    }
+  }
+
+  var allCheckbox = document.getElementById('dt-all');
+  var dtBoxes = document.querySelectorAll('.dt-checkbox');
+
+  if (allCheckbox) {
+    allCheckbox.addEventListener('change', function() {
+      var state = allCheckbox.checked;
+      dtBoxes.forEach(function(b) {
+        b.checked = state;
+      });
+      applyDrivetrainFilter();
+    });
+  }
+
+  dtBoxes.forEach(function(b) {
+    b.addEventListener('change', function() {
+      var allChecked = true;
+      dtBoxes.forEach(function(cb) {
+        if (!cb.checked) allChecked = false;
+      });
+      if (allCheckbox) allCheckbox.checked = allChecked;
+      applyDrivetrainFilter();
+    });
+  });
+
+  el.on('plotly_sliderchange', function(data) {
+    setTimeout(applyDrivetrainFilter, 40);
+  });
+  el.on('plotly_animated', function(data) {
+    applyDrivetrainFilter();
+  });
+}
+"
+
+onRender(built, js_code)
+```
+
+> **Dataset Scale:** This interactive visualization is built on **`r format(n_obs, big.mark = ",")` authentic vehicle observations** across model years 1960 through 2020. Drag the slider to inspect any year or toggle drivetrains to filter.
+
+### Key Insights from the Data
+
+1. **A Resilient Positive Correlation:** Across virtually every decade, vehicle curb weight exhibits a strong upward relationship with engine horsepower. Lighter vehicles rarely exceed 200 hp, whereas vehicles weighing over 2,000 kg consistently require 250 hp to 600+ hp to deliver performance.
+2. **Drivetrain Architecture Roles:**
+   - **Front-Wheel Drive (FWD):** Dominates the commuter and economy segment (900 kg – 1,600 kg, 75 hp – 180 hp) starting in the late 1970s and 1980s, offering high packaging efficiency and low mass.
+   - **Rear-Wheel Drive (RWD):** Predominates in the earlier 1960s–1970s eras and remains the choice for sports cars, muscle cars, and executive sedans requiring high horsepower (250 hp – 650+ hp).
+   - **All-Wheel Drive (AWD):** Expands rapidly from the 1990s onward, anchoring the upper-middle weight category (1,600 kg – 2,400 kg) for premium sedans and performance crossovers.
+   - **Four-Wheel Drive (4WD):** Clusters in heavy-duty utility vehicles and off-road trucks (1,800 kg – 2,800 kg).
+
+---
+
+## Historical Trends: Power and Efficiency Over Time
+
+To place this relationship in historical context, how have horsepower and fuel consumption changed over the past six decades? 
+
+The time-series below tracks the **yearly average engine horsepower** across all recorded production models from 1960 to 2020.
+
+```{r}
+#| label: historical-trend-plot
+#| fig-width: 9
+#| fig-height: 4.5
+
+yearly_stats <- cars_raw |>
+  filter(
+    !is.na(Year_from),
+    Year_from >= 1960,
+    Year_from <= 2020
+  ) |>
+  group_by(Year_from) |>
+  summarise(
+    avg_hp = mean(engine_hp, na.rm = TRUE),
+    avg_fuel = mean(mixed_fuel_consumption_per_100_km_l, na.rm = TRUE),
+    vehicle_count = n(),
+    .groups = "drop"
+  ) |>
+  filter(vehicle_count >= 15)
+
+plot_ly(
+  data = yearly_stats,
+  x = ~Year_from,
+  y = ~avg_hp,
+  type = "scatter",
+  mode = "lines+markers",
+  line = list(color = "#38bdf8", width = 3),
+  marker = list(color = "#0284c7", size = 6),
+  text = ~paste0(
+    "<b>Model Year: ", Year_from, "</b><br>",
+    "Average Horsepower: ", round(avg_hp, 1), " hp<br>",
+    "Vehicles Recorded: ", format(vehicle_count, big.mark = ",")
+  ),
+  hoverinfo = "text"
+) |>
+  layout(
+    title = list(
+      text = "<b>Evolution of Vehicle Engine Horsepower (1960–2020)</b><br><sup>Yearly mean across global production models</sup>",
+      font = list(color = "#f8fafc")
+    ),
+    paper_bgcolor = "rgba(13, 17, 24, 0.6)",
+    plot_bgcolor = "rgba(10, 15, 22, 0.7)",
+    xaxis = list(title = list(text = "Model Year", font = list(color = "#dfeaf8")), tickfont = list(color = "#dfeaf8"), gridcolor = "rgba(148, 163, 184, 0.16)", zerolinecolor = "rgba(148, 163, 184, 0.18)"),
+    yaxis = list(title = list(text = "Average Engine Horsepower (hp)", font = list(color = "#dfeaf8")), tickfont = list(color = "#dfeaf8"), gridcolor = "rgba(148, 163, 184, 0.16)", zerolinecolor = "rgba(148, 163, 184, 0.18)"),
+    font = list(color = "#e2e8f0"),
+    template = "plotly_dark"
+  )
+```
+
+### Supporting Trend: Fuel Consumption Over Time
+
+Technological advances such as direct fuel injection, turbocharging, and multi-gear transmissions enabled vehicles to increase their average horsepower while simultaneously decreasing fuel consumption.
+
+```{r}
+#| label: fuel-economy-plot
+#| fig-width: 9
+#| fig-height: 4.5
+
+yearly_fuel <- yearly_stats |>
+  filter(!is.na(avg_fuel), Year_from >= 1975)
+
+plot_ly(
+  data = yearly_fuel,
+  x = ~Year_from,
+  y = ~avg_fuel,
+  type = "scatter",
+  mode = "lines+markers",
+  line = list(color = "#f43f5e", width = 3),
+  marker = list(color = "#e11d48", size = 6),
+  text = ~paste0(
+    "<b>Model Year: ", Year_from, "</b><br>",
+    "Average Consumption: ", round(avg_fuel, 2), " L / 100 km<br>",
+    "Sample Size: ", vehicle_count
+  ),
+  hoverinfo = "text"
+) |>
+  layout(
+    title = list(
+      text = "<b>Average Mixed Fuel Consumption Over Time (1975–2020)</b><br><sup>Liters per 100 km (lower indicates higher fuel efficiency)</sup>",
+      font = list(color = "#f8fafc")
+    ),
+    paper_bgcolor = "rgba(13, 17, 24, 0.6)",
+    plot_bgcolor = "rgba(10, 15, 22, 0.7)",
+    xaxis = list(title = list(text = "Model Year", font = list(color = "#dfeaf8")), tickfont = list(color = "#dfeaf8"), gridcolor = "rgba(148, 163, 184, 0.16)", zerolinecolor = "rgba(148, 163, 184, 0.18)"),
+    yaxis = list(title = list(text = "Mixed Fuel Consumption (L / 100 km)", font = list(color = "#dfeaf8")), tickfont = list(color = "#dfeaf8"), gridcolor = "rgba(148, 163, 184, 0.16)", zerolinecolor = "rgba(148, 163, 184, 0.18)"),
+    font = list(color = "#e2e8f0"),
+    template = "plotly_dark"
+  )
+```
+
+
+
+Across the 1980s through 2010s, average mixed fuel consumption fell from around 9.5 L/100 km to below 7.0 L/100 km, demonstrating that modern vehicles achieved greater horsepower without sacrificing energy efficiency.

@@ -1,0 +1,25 @@
+---
+title: "About"
+---
+
+## About This Project
+
+This project was developed for **Milestone 4** in Data Science. The objective is to explore multidimensional automotive specifications using data visualization techniques and communicate statistical insights effectively through an interactive Quarto website.
+
+## About the Dataset
+
+The dataset used in this analysis is the **Car Dataset (1945–2020)**. It contains technical specifications for over 70,000 distinct passenger vehicle trim configurations worldwide.
+
+Key variables explored include:
+
+* **`curb_weight_kg`**: The unladen weight of the vehicle in kilograms (without passengers or cargo).
+* **`engine_hp`**: Engine power output rated in mechanical horsepower.
+* **`drive_wheels`**: The vehicle's drivetrain layout (Front-Wheel Drive, Rear-Wheel Drive, All-Wheel Drive, and Four-Wheel Drive).
+* **`Year_from`**: The initial model year of manufacture.
+* **`mixed_fuel_consumption_per_100_km_l`**: Combined cycle fuel consumption in liters per 100 kilometers.
+
+## About the Author
+
+This website was built by **Nikita Liohki**.
+
+The code and data analysis workflow are hosted on GitHub: [milestone-4 Repository](https://github.com/nikiwalkor83/milestone-4).
